@@ -27,7 +27,9 @@ def main():
     options = parser.parse_args()
 
     notifyState = None
-    arduino = serial.Serial( "/dev/tty.usbserial-A8007qt3", 115200, stopbits=serial.STOPBITS_TWO )
+
+    if options.led:
+        arduino = serial.Serial( "/dev/tty.usbserial-A8007qt3", 115200, stopbits=serial.STOPBITS_TWO )
 
     while 1:
         try:
