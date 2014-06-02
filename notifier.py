@@ -24,26 +24,32 @@ def main():
         default=False,
         action='store_true'
     )
+    parser.add_argument( "--serial-dev",
+        help="Set the serial device to use when communicating with the Arduino",
+        default="/dev/tty.usbserial-A8007qt3"
+    )
     options = parser.parse_args()
 
     notifyState = None
 
     if options.led:
-        arduino = serial.Serial( "/dev/tty.usbserial-A8007qt3", 115200, stopbits=serial.STOPBITS_TWO )
+        arduino = serial.Serial( options.serial_dev, 115200, stopbits=serial.STOPBITS_TWO )
 
     while 1:
         try:
             query = MinecraftQuery(options.host, 25565, timeout=10, retries=3)
             response = query.get_rules()
+
+            print_players( response )
+
+            if options.notify:
+                notifyState = notify( response, notifyState )
+
+            if options.led:
+                ledState = led( response, arduino )
+
         except socket.error as e:
             print "socket exception caught:", e.message
-            print "Server is down or unreachable."
-
-        if options.notify:
-            notifyState = notify( response, notifyState )
-
-        if options.led:
-            ledState = led( response, arduino )
 
         time.sleep(10)
 
@@ -74,6 +80,12 @@ def notify(response, numplayers):
     os.system('terminal-notifier {}'.format(' '.join([t, i, m, e])))
 
     return numplayers
+
+def print_players( response ):
+    if response['numplayers'] > 0:
+        print str( response['numplayers'] ) + " players online: " + ', '.join( response['players'] )
+    else:
+        print "Server is empty"
 
 if __name__=="__main__":
     main()
