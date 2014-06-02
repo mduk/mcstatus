@@ -24,16 +24,20 @@ def main():
         default=False,
         action='store_true'
     )
-    parser.add_argument( "--serial-dev",
-        help="Set the serial device to use when communicating with the Arduino",
+    parser.add_argument( "-sd", "--serial-dev",
+        help="Serial device to use for LED",
         default="/dev/tty.usbserial-A8007qt3"
+    )
+    parser.add_argument( "-sb", "--serial-baud",
+        help="Serial baudrate to use for LED",
+        default=115200
     )
     options = parser.parse_args()
 
     notifyState = None
 
     if options.led:
-        arduino = serial.Serial( options.serial_dev, 115200, stopbits=serial.STOPBITS_TWO )
+        arduino = serial.Serial( options.serial_dev, options.serial_baud, stopbits=serial.STOPBITS_TWO )
 
     while 1:
         try:
