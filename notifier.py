@@ -5,6 +5,7 @@ import serial
 import socket
 import sys
 import time
+import datetime
 from argparse import ArgumentParser
 
 from minecraft_query import MinecraftQuery
@@ -86,10 +87,11 @@ def notify(response, numplayers):
     return numplayers
 
 def print_players( response ):
+    time = str( datetime.datetime.now() )
+    msg = "Server is empty"
     if response['numplayers'] > 0:
-        print str( response['numplayers'] ) + " players online: " + ', '.join( response['players'] )
-    else:
-        print "Server is empty"
+        msg = str( response['numplayers'] ) + " players online: " + ', '.join( response['players'] )
+    print time + ' ' + msg
 
 if __name__=="__main__":
     main()
